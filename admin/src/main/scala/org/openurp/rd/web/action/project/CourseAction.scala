@@ -1,0 +1,12 @@
+package org.openurp.rd.web.action.project
+
+import org.beangle.data.dao.OqlBuilder
+import org.beangle.webmvc.entity.action.RestfulAction
+import org.openurp.rd.project.model.RdProject
+
+class CourseAction extends RestfulAction[RdProject] {
+  override protected def getQueryBuilder: OqlBuilder[RdProject] = {
+    val query = super.getQueryBuilder
+    query.where("rdProject.forCourse=true")
+  }
+}
