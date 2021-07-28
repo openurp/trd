@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.rd.web.action.project
+package org.openurp.rd.web.action.admin.project
 
 import org.beangle.cdi.bind.BindModule
+import org.openurp.code.service.impl.CodeServiceImpl
 
 class DefaultModule extends BindModule {
   override protected def binding(): Unit = {
     bind(classOf[CourseAction], classOf[TeachingAction])
+    bind(classOf[CodeServiceImpl])
   }
 }

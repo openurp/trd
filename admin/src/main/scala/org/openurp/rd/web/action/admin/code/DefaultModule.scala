@@ -1,4 +1,4 @@
-package org.openurp.rd.web.action.code
+package org.openurp.rd.web.action.admin.code
 
 import org.beangle.cdi.bind.BindModule
 
