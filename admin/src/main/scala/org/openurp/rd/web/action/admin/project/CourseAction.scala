@@ -19,11 +19,16 @@
 package org.openurp.rd.web.action.admin.project
 
 import org.beangle.data.dao.OqlBuilder
+import org.beangle.data.transfer.excel.ExcelSchema
 import org.beangle.ems.app.Ems
+import org.beangle.webmvc.api.annotation.response
+import org.beangle.webmvc.api.view.{Stream, View}
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.base.model.Department
+import org.openurp.base.model.{Department, User}
 import org.openurp.code.service.impl.CodeServiceImpl
-import org.openurp.rd.project.model.{RdProject, RdProjectCategory, RdProjectLevel, RdProjectStatus}
+import org.openurp.rd.project.model._
+
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 class CourseAction extends RestfulAction[RdProject] {
   var codeService: CodeServiceImpl = _
@@ -36,13 +41,70 @@ class CourseAction extends RestfulAction[RdProject] {
   override def editSetting(entity: RdProject): Unit = {
     put("departments", entityDao.getAll(classOf[Department]))
     put("levels", entityDao.getAll(classOf[RdProjectLevel]))
-    put("statuses",entityDao.getAll(classOf[RdProjectStatus]))
+    put("statuses", entityDao.getAll(classOf[RdProjectStatus]))
     val query = OqlBuilder.from(classOf[RdProjectCategory], "c")
     query.where("c.forCourse=true")
     put("categories", entityDao.search(query))
-    put("urp",Ems)
-    val members=entity.members map(_.user)
-    put("members",members)
+    put("urp", Ems)
+    val members = entity.members map (_.user)
+    put("members", members)
     super.editSetting(entity)
+  }
+
+  override protected def saveAndRedirect(entity: RdProject): View = {
+    entity.forCourse = true
+    val memberIds = longIds("member")
+    entity.members.clear()
+    var idx = 1
+    val leaderId = entity.leader.id
+    memberIds foreach { mId =>
+      if (mId != leaderId) {
+        val member = new RdProjectMember()
+        member.idx = idx
+        member.user = entityDao.get(classOf[User], mId)
+        member.project = entity
+        entity.members += member
+        idx += 1
+      }
+    }
+    super.saveAndRedirect(entity)
+  }
+
+  @response
+  def downloadTemplate(): Any = {
+    val statuses = entityDao.search(OqlBuilder.from(classOf[RdProjectStatus], "p").orderBy("p.name")).map(_.name)
+    val levels = entityDao.search(OqlBuilder.from(classOf[RdProjectLevel], "bc").orderBy("bc.name")).map(_.name)
+    val departs = entityDao.search(OqlBuilder.from(classOf[Department], "bt").orderBy("bt.name")).map(_.name)
+    val categories = entityDao.search(OqlBuilder.from(classOf[RdProjectCategory], "bc").orderBy("bc.name")).map(_.name)
+
+    val schema = new ExcelSchema()
+    val sheet = schema.createScheet("数据模板")
+    sheet.title("课程建设项目信息模板")
+    sheet.remark("特别说明：\n1、不可改变本表格的行列结构以及批注，否则将会导入失败！\n2、必须按照规格说明的格式填写。\n3、可以多次导入，重复的信息会被新数据更新覆盖。\n4、保存的excel文件名称可以自定。")
+    sheet.add("项目编号", "rdProject.code").length(15).required().remark("≤10位")
+    sheet.add("课程名称", "rdProject.name").length(150).required()
+    sheet.add("负责人姓名", "leaderName").length(30).required()
+    sheet.add("建设院系", "rdProject.department.name").ref(departs).required()
+    sheet.add("项目级别", "rdProject.level.name").ref(levels).required()
+    sheet.add("项目类别", "rdProject.category.name").ref(categories).required()
+    sheet.add("资金", "rdProject.funds").required().decimal()
+
+    sheet.add("立项年月", "rdProject.beginOn").required().date("YYYY-MM")
+    sheet.add("最晚结项年月", "rdProject.endOn").required().date("YYYY-MM")
+    sheet.add("实际结项年月", "rdProject.finishedOn").date("YYYY-MM")
+
+    sheet.add("项目状态", "rdProject.status.name").ref(statuses).required()
+
+    sheet.add("参与人姓名列表（按次序）", "memberNames")
+    sheet.add("备注", "rdProject.remark")
+
+    val code = schema.createScheet("数据字典")
+    code.add("项目类别").data(categories)
+    code.add("项目级别").data(levels)
+    code.add("建设院系").data(departs)
+    code.add("项目状态").data(statuses)
+    val os = new ByteArrayOutputStream()
+    schema.generate(os)
+    Stream(new ByteArrayInputStream(os.toByteArray), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "课程项目模板.xlsx")
   }
 }

@@ -4,7 +4,7 @@
 <div class="search-container">
     <div class="search-panel">
         [@b.form name="rdProjectSearchForm" action="!search" target="rdProjectlist" title="ui.searchForm" theme="search"]
-            [@b.textfields names="rdProject.code;代码"/]
+            [@b.textfields names="rdProject.code;编号"/]
             [@b.textfields names="rdProject.name;名称"/]
             <input type="hidden" name="orderBy" value="rdProject.code"/>
         [/@]
