@@ -18,6 +18,7 @@
  */
 package org.openurp.rd.web.action.admin.project
 
+import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.data.transfer.excel.ExcelSchema
 import org.beangle.data.transfer.importer.ImportSetting
@@ -55,10 +56,17 @@ class CourseAction extends RestfulAction[RdProject] {
       query.where("year(rdProject.beginOn)=:year",beginYear)
     }
     get("leaderName") foreach{ leaderName=>
-      query.where("rdProject.leader.name like :leaderName","%"+leaderName+"%")
+      if(Strings.isNotBlank(leaderName)){
+          query.where("exists(from rdProject.leaders as l where l.name like :leaderName)","%"+leaderName+"%")
+      }
     }
     get("memberName") foreach{ memberName=>
-      query.where("exists(from rdProject.members as m where m.user.name like :memberName)","%"+memberName+"%")
+      if(Strings.isNotBlank(memberName)) {
+        query.where("exists(from rdProject.members as m where m.name like :memberName)", "%" + memberName + "%")
+      }
+    }
+    getBoolean("hasExternalUser") foreach{hasExternalUser=>
+      query.where((if(hasExternalUser) "" else " not ") +"exists(from rdProject.members as m where m.user is null)")
     }
     query
   }
@@ -78,15 +86,19 @@ class CourseAction extends RestfulAction[RdProject] {
 
   override protected def saveAndRedirect(entity: RdProject): View = {
     entity.forCourse = true
+    entity.leaders.clear()
+    val leaderIds = longIds("leader").toSet
+    entity.leaders ++= entityDao.find(classOf[User],leaderIds)
+
     val memberIds = longIds("member")
     entity.members.clear()
     var idx = 1
-    val leaderId = entity.leader.id
     memberIds foreach { mId =>
-      if (mId != leaderId) {
+      if (!leaderIds.contains(mId)) {
         val member = new RdProjectMember()
         member.idx = idx
-        member.user = entityDao.get(classOf[User], mId)
+        member.user = Some(entityDao.get(classOf[User], mId))
+        member.name=member.user.get.name
         member.project = entity
         entity.members += member
         idx += 1

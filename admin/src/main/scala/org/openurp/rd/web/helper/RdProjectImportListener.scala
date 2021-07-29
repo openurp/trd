@@ -18,6 +18,7 @@
  */
 package org.openurp.rd.web.helper
 
+import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.transfer.importer.{ImportListener, ImportResult}
@@ -63,50 +64,59 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
     }
   }
 
+  private def processNames(str: Any): Array[String] = {
+    var names = Strings.replace(str.toString, "，", ",")
+    Strings.split(Strings.replace(names, "、", ","))
+  }
+
   override def onItemFinish(tr: ImportResult): Unit = {
     val project = transfer.current.asInstanceOf[RdProject]
     project.forCourse = forCourse
 
     project.updatedAt = Instant.now
-    var leader: User = null
+    var leaders = Collections.newBuffer[User]
+    var leaderNames: Set[String] = null
     transfer.curData.get("leaderName") foreach { leaderName =>
-      val rs = getTeacherUserByName(leaderName)
-      if (Strings.isEmpty(rs._2)) {
-        leader = rs._1.get
-      } else {
-        tr.addFailure("找不到唯一的负责人", rs._2)
+      leaderNames = processNames(leaderName).toSet
+      leaderNames foreach { name =>
+        val rs = getTeacherUserByName(name)
+        if (Strings.isEmpty(rs._2)) {
+          leaders += rs._1.get
+        } else {
+          tr.addFailure("找不到唯一的负责人", rs._2)
+        }
       }
     }
 
-    if (null != leader && project.department != null && project.level != null && project.category != null && project.status != null) {
+    if (null != leaders && project.department != null && project.level != null && project.category != null && project.status != null) {
       project.members.clear()
-      project.leader = leader
-      val errors = tr.errors
+      project.leaders.clear()
+      project.leaders ++= leaders
       transfer.curData.get("memberNames") foreach { memberNames =>
         if (null != memberNames) {
           var names = Strings.replace(memberNames.toString, "，", ",")
           names = Strings.replace(names, "、", ",")
           var idx = 1
           Strings.split(names).foreach { name =>
-            if (name != leader.name) {
+            if (!leaderNames.contains(name)) {
               val rs = getTeacherUserByName(name)
+              val member = new RdProjectMember()
+              member.idx = idx
               if (Strings.isEmpty(rs._2)) {
-                val member = new RdProjectMember()
-                member.idx = idx
-                member.user = rs._1.get
-                member.project = project
-                project.members += member
-                idx += 1
+                member.user = Some(rs._1.get)
+                member.name= rs._1.get.name
               } else {
+                member.name = name
                 tr.addFailure("找不到唯一的参与人", rs._2)
               }
+              member.project = project
+              project.members += member
+              idx += 1
             }
           }
         }
       }
-      if (tr.errors == errors) {
-        entityDao.saveOrUpdate(project)
-      }
+      entityDao.saveOrUpdate(project)
     }
   }
 }

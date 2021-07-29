@@ -18,14 +18,16 @@
   </tr>
   <tr>
     <td class="title" width="20%">负责人:</td>
-    <td class="content">${rdProject.leader.name}</td>
+    <td class="content">
+      [#list rdProject.leaders as leader]${leader.name}[#if leader_has_next],[/#if][/#list]
+    </td>
     <td class="title" width="20%">建设院系:</td>
     <td class="content">${rdProject.department.name}</td>
   </tr>
   <tr>
     <td class="title" width="20%">参与人:</td>
     <td class="content" colspan="3">
-      [#list rdProject.members as m]${m.user.name}[#if m_has_next],[/#if][/#list]
+      [#list rdProject.members as m]${m.name}[#if !(m.user??)]<sup>外</sup>[/#if][#if m_has_next],[/#if][/#list]
     </td>
   </tr>
   <tr>

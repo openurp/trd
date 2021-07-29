@@ -7,8 +7,8 @@
 [#if importResultState! !="importFileError"]
   <table class="infoTable" align="center" width="100%">
      <tr><td colspan="2" align="center">导入结果</td></tr>
-     <tr><td class="title">成功：</td><td>${importer.success}</td></tr>
-     <tr><td class="title">失败：</td><td>${importer.fail}</td></tr>
+     <tr><td class="title">成功：</td><td>${(importer.success)!}</td></tr>
+     <tr><td class="title">失败：</td><td>${(importer.fail)!}</td></tr>
   </table>
 [/#if]
 [#if (importResult.errs)??]

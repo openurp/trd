@@ -11,6 +11,7 @@
             [@b.select name="rdProject.category.id" label="项目分类"  items=categories option="id,name" empty="..."/]
             [@b.select name="rdProject.department.id" label="院系" items=departments option="id,name" empty="..."/]
             [@b.select name="rdProject.status.id" label="项目状态"  items=statuses option="id,name" empty="..."/]
+            [@b.select name="hasExternalUser" label="校外用户" items={"1":"包含校外用户","0":"全是本校教师"}/]
             <input type="hidden" name="orderBy" value="rdProject.code"/>
         [/@]
     </div>
