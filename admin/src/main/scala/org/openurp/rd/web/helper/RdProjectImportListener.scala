@@ -27,7 +27,6 @@ import org.openurp.rd.project.model.{RdProject, RdProjectMember}
 
 import java.time.Instant
 
-
 class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends ImportListener {
   override def onStart(tr: ImportResult): Unit = {}
 
