@@ -18,9 +18,24 @@
  */
 package org.openurp.rd.web.action.admin.achievement
 
+import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.rd.achievement.model.RdAchievementAward
+import org.openurp.rd.code.model.{RdAwardGrade, RdLevel}
 
 class AwardAction extends RestfulAction[RdAchievementAward] {
 
+  override protected def editSetting(entity: RdAchievementAward): Unit = {
+    put("grades", entityDao.getAll(classOf[RdAwardGrade]))
+    put("levels", entityDao.getAll(classOf[RdLevel]))
+    super.editSetting(entity)
+  }
+
+  override protected def saveAndRedirect(entity: RdAchievementAward): View = {
+    entity.awardOn match {
+      case Some(awardOn) => entity.awardYear = awardOn.getYear
+      case None =>
+    }
+    super.saveAndRedirect(entity)
+  }
 }

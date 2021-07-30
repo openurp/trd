@@ -23,18 +23,18 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.transfer.importer.{ImportListener, ImportResult}
 import org.openurp.base.model.User
-import org.openurp.rd.project.model.{RdProject, RdProjectMember}
+import org.openurp.rd.achievement.model.{RdAchievement, RdAchievementMember}
 
 import java.time.Instant
 
-class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends ImportListener {
+class RdAchievementImportListener(entityDao: EntityDao) extends ImportListener {
   override def onStart(tr: ImportResult): Unit = {}
 
   override def onFinish(tr: ImportResult): Unit = {}
 
   override def onItemStart(tr: ImportResult): Unit = {
-    transfer.curData.get("rdProject.code") foreach { code =>
-      val cs = entityDao.findBy(classOf[RdProject], "code", List(code))
+    transfer.curData.get("rdAchievement.code") foreach { code =>
+      val cs = entityDao.findBy(classOf[RdAchievement], "code", List(code))
       if (cs.nonEmpty) {
         transfer.current = cs.head
       }
@@ -69,55 +69,38 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
   }
 
   override def onItemFinish(tr: ImportResult): Unit = {
-    val project = transfer.current.asInstanceOf[RdProject]
-    project.forCourse = forCourse
+    val achievement = transfer.current.asInstanceOf[RdAchievement]
 
-    project.updatedAt = Instant.now
-    val leaders = Collections.newBuffer[User]
-    var leaderNames: Set[String] = null
-    transfer.curData.get("leaderName") foreach { leaderName =>
-      leaderNames = processNames(leaderName).toSet
-      leaderNames foreach { name =>
-        val rs = getTeacherUserByName(name)
-        if (Strings.isEmpty(rs._2)) {
-          leaders += rs._1.get
-        } else {
-          tr.addFailure("找不到唯一的负责人", rs._2)
+    achievement.updatedAt = Instant.now
+    transfer.curData.get("memberNames") foreach { memberNames =>
+      if (null != memberNames) {
+        var idx = 1
+        processNames(memberNames).foreach { name =>
+          val rs = getTeacherUserByName(name)
+          val member = achievement.getMember(idx) match {
+            case Some(m) => m
+            case None =>
+              val member = new RdAchievementMember()
+              member.achievement = achievement
+              member.idx = idx
+              achievement.members += member
+              member
+          }
+          if (Strings.isEmpty(rs._2)) {
+            member.user = Some(rs._1.get)
+            member.name = rs._1.get.name
+          } else {
+            member.name = name
+            tr.addFailure("找不到唯一的完成人", rs._2)
+          }
+          idx += 1
         }
+        achievement.members --= achievement.members.find(_.idx >= idx)
       }
     }
 
-    if (leaders.nonEmpty && project.department != null && project.level != null && project.category != null && project.status != null) {
-      project.leaders.clear()
-      project.leaders ++= leaders
-      transfer.curData.get("memberNames") foreach { memberNames =>
-        if (null != memberNames) {
-          var idx = 1
-          processNames(memberNames).foreach { name =>
-            if (!leaderNames.contains(name)) {
-              val rs = getTeacherUserByName(name)
-              val member = project.getMember(idx) match {
-                case Some(m) => m
-                case None =>
-                  val m = new RdProjectMember()
-                  m.idx = idx
-                  m.project = project
-                  project.members += m
-                  m
-              }
-              if (Strings.isEmpty(rs._2)) {
-                member.user = Some(rs._1.get)
-                member.name = rs._1.get.name
-              } else {
-                member.name = name
-                tr.addFailure("找不到唯一的参与人", rs._2)
-              }
-              idx += 1
-            }
-          }
-        }
-      }
-      entityDao.saveOrUpdate(project)
+    if (achievement.members.nonEmpty && achievement.achievementType != null) {
+      entityDao.saveOrUpdate(achievement)
     }
   }
 }

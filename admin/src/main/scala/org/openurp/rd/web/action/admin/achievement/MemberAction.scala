@@ -18,9 +18,25 @@
  */
 package org.openurp.rd.web.action.admin.achievement
 
+import org.beangle.commons.lang.Strings
+import org.beangle.ems.app.Ems
+import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.rd.achievement.model.{RdAchievementAward, RdAchievementMember}
+import org.openurp.base.model.User
+import org.openurp.rd.achievement.model.RdAchievementMember
 
 class MemberAction extends RestfulAction[RdAchievementMember] {
 
+  override protected def editSetting(entity: RdAchievementMember): Unit = {
+    put("urp", Ems)
+    super.editSetting(entity)
+  }
+
+  override protected def saveAndRedirect(entity: RdAchievementMember): View = {
+    entity.user match {
+      case Some(u) => entity.name = entityDao.get(classOf[User], u.id).name
+      case None => if (Strings.isEmpty(entity.name)) entity.name = "??"
+    }
+    super.saveAndRedirect(entity)
+  }
 }
