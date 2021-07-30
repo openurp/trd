@@ -19,8 +19,8 @@
 package org.openurp.rd.web.action.admin.code
 
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.rd.project.model.RdProjectLevel
+import org.openurp.rd.code.model.RdLevel
 
-class ProjectLevelAction extends RestfulAction[RdProjectLevel] {
+class RdLevelAction extends RestfulAction[RdLevel] {
 
 }

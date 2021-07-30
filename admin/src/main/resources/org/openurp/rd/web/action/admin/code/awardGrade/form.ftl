@@ -1,0 +1,18 @@
+[#ftl]
+[@b.head/]
+[@b.toolbar title="修改获奖等级"]bar.addBack();[/@]
+[@b.tabs]
+  [@b.form action=b.rest.save(rdAwardGrade) theme="list"]
+    [@b.textfield name="rdAwardGrade.code" label="代码" value="${rdAwardGrade.code!}" required="true" maxlength="20"/]
+    [@b.textfield name="rdAwardGrade.name" label="名称" value="${rdAwardGrade.name!}" required="true" maxlength="20"/]
+    [@b.textfield name="rdAwardGrade.enName" label="英文名称" value="${rdAwardGrade.enName!}" maxlength="100"/]
+    [@b.startend label="有效期限"
+      name="rdAwardGrade.beginOn,rdAwardGrade.endOn" required="true,false"
+      start=rdAwardGrade.beginOn end=rdAwardGrade.endOn format="date"/]
+    [@b.textfield name="rdAwardGrade.remark" label="备注" value="${rdAwardGrade.remark!}" maxlength="3"/]
+    [@b.formfoot]
+      [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]
+    [/@]
+  [/@]
+[/@]
+[@b.foot/]

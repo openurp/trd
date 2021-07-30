@@ -1,0 +1,18 @@
+[#ftl]
+[@b.head/]
+[@b.toolbar title="修改项目类别"]bar.addBack();[/@]
+[@b.tabs]
+  [@b.form action=b.rest.save(rdLevel) theme="list"]
+    [@b.textfield name="rdLevel.code" label="代码" value="${rdLevel.code!}" required="true" maxlength="20"/]
+    [@b.textfield name="rdLevel.name" label="名称" value="${rdLevel.name!}" required="true" maxlength="20"/]
+    [@b.textfield name="rdLevel.enName" label="英文名称" value="${rdLevel.enName!}" maxlength="100"/]
+    [@b.startend label="有效期限"
+      name="rdLevel.beginOn,rdLevel.endOn" required="true,false"
+      start=rdLevel.beginOn end=rdLevel.endOn format="date"/]
+    [@b.textfield name="rdLevel.remark" label="备注" value="${rdLevel.remark!}" maxlength="3"/]
+    [@b.formfoot]
+      [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]
+    [/@]
+  [/@]
+[/@]
+[@b.foot/]

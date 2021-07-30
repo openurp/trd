@@ -29,6 +29,7 @@ import org.beangle.webmvc.api.view.{Stream, View}
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.model.{Department, User}
 import org.openurp.code.service.impl.CodeServiceImpl
+import org.openurp.rd.code.model.RdLevel
 import org.openurp.rd.project.model._
 import org.openurp.rd.web.helper.RdProjectImportListener
 
@@ -43,7 +44,7 @@ abstract class AbstractProjectAction extends RestfulAction[RdProject] {
 
   override def indexSetting(): Unit = {
     put("departments", entityDao.getAll(classOf[Department]))
-    put("levels", entityDao.getAll(classOf[RdProjectLevel]))
+    put("levels", entityDao.getAll(classOf[RdLevel]))
     put("statuses", entityDao.getAll(classOf[RdProjectStatus]))
     val query = OqlBuilder.from(classOf[RdProjectCategory], "c")
     query.where("c.forCourse=:forCourse", forCourse)
@@ -76,7 +77,7 @@ abstract class AbstractProjectAction extends RestfulAction[RdProject] {
 
   override def editSetting(entity: RdProject): Unit = {
     put("departments", entityDao.getAll(classOf[Department]))
-    put("levels", entityDao.getAll(classOf[RdProjectLevel]))
+    put("levels", entityDao.getAll(classOf[RdLevel]))
     put("statuses", entityDao.getAll(classOf[RdProjectStatus]))
     val query = OqlBuilder.from(classOf[RdProjectCategory], "c")
     query.where("c.forCourse=:forCourse", forCourse)
@@ -120,7 +121,7 @@ abstract class AbstractProjectAction extends RestfulAction[RdProject] {
   @response
   def downloadTemplate(): Any = {
     val statuses = entityDao.search(OqlBuilder.from(classOf[RdProjectStatus], "p").orderBy("p.name")).map(_.name)
-    val levels = entityDao.search(OqlBuilder.from(classOf[RdProjectLevel], "bc").orderBy("bc.name")).map(_.name)
+    val levels = entityDao.search(OqlBuilder.from(classOf[RdLevel], "bc").orderBy("bc.name")).map(_.name)
     val departs = entityDao.search(OqlBuilder.from(classOf[Department], "bt").orderBy("bt.name")).map(_.name)
     val categories = entityDao.search(OqlBuilder.from(classOf[RdProjectCategory], "bc").orderBy("bc.name")).map(_.name)
 

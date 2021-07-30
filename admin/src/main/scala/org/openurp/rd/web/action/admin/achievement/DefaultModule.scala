@@ -16,14 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.rd.web.action.admin.code
+package org.openurp.rd.web.action.admin.achievement
 
 import org.beangle.cdi.bind.BindModule
 
 class DefaultModule extends BindModule {
   override protected def binding(): Unit = {
-    bind(classOf[IndexAction], classOf[ProjectStatusAction])
-    bind(classOf[RdLevelAction], classOf[ProjectCategoryAction])
-    bind(classOf[AwardGradeAction],classOf[AchievementTypeAction])
+    bind(classOf[IndexAction], classOf[AwardAction], classOf[MemberAction])
   }
 }
