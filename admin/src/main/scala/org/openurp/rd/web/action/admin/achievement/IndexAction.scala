@@ -18,6 +18,8 @@
  */
 package org.openurp.rd.web.action.admin.achievement
 
+import org.beangle.commons.collection.Collections
+import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.data.transfer.excel.ExcelSchema
 import org.beangle.data.transfer.importer.ImportSetting
@@ -28,6 +30,7 @@ import org.beangle.webmvc.api.view.Stream
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.model.User
 import org.openurp.rd.achievement.model.{RdAchievement, RdAchievementType}
+import org.openurp.rd.code.model.{RdAwardGrade, RdLevel}
 import org.openurp.rd.web.helper.RdAchievementImportListener
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
@@ -35,6 +38,8 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 class IndexAction extends RestfulAction[RdAchievement] {
   override protected def indexSetting(): Unit = {
     put("achievementTypes", entityDao.getAll(classOf[RdAchievementType]))
+    put("grades", entityDao.getAll(classOf[RdAwardGrade]))
+    put("levels", entityDao.getAll(classOf[RdLevel]))
     super.indexSetting()
   }
 
@@ -44,6 +49,42 @@ class IndexAction extends RestfulAction[RdAchievement] {
       entity.organization = entityDao.findBy(classOf[User], "code", List(Securities.user)).head.school.name
     }
     super.editSetting(entity)
+  }
+
+  override protected def getQueryBuilder: OqlBuilder[RdAchievement] = {
+    val query = super.getQueryBuilder
+    val awardYear = getInt("awardYear")
+    val gradeId = getInt("grade.id")
+    val levelId = getInt("level.id")
+
+    if (awardYear.nonEmpty || gradeId.nonEmpty || levelId.nonEmpty) {
+      val params = Collections.newMap[String, Any]
+      val conditions = Collections.newBuffer[String]
+      awardYear foreach { awardYear =>
+        conditions += " award.awardYear=:year "
+        params.put("year", awardYear)
+      }
+      gradeId foreach { gid =>
+        conditions += " award.grade.id=:gradeId "
+        params.put("gradeId", gid)
+      }
+      levelId foreach { lid =>
+        conditions += " award.level.id=:levelId "
+        params.put("levelId", lid)
+      }
+      val condition = "exists(from rdAchievement.awards award where " + conditions.mkString(" and ") + ")"
+      query.where(condition)
+      query.params(params)
+    }
+    get("memberName") foreach { memberName =>
+      if (Strings.isNotBlank(memberName)) {
+        query.where("exists(from rdAchievement.members as m where m.name like :memberName)", "%" + memberName + "%")
+      }
+    }
+    getBoolean("hasExternalUser") foreach { hasExternalUser =>
+      query.where((if (hasExternalUser) "" else " not ") + "exists(from rdAchievement.members as m where m.user is null)")
+    }
+    query
   }
 
   protected override def configImport(setting: ImportSetting): Unit = {

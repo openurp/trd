@@ -5,12 +5,17 @@
     <div class="search-panel">
     [@b.form name="achievementSearchForm" action="!search" target="achievementlist" title="ui.searchForm" theme="search"]
       [@b.textfields names="rdAchievement.code;编号"/]
-      [@b.textfields names="rdAchievement.name;名称,rdAchievement.organization;完成单位"/]
+      [@b.textfields names="rdAchievement.name;名称,memberName;参与人"/]
       [@b.select name="rdAchievement.achievementType.id" items=achievementTypes label="成果类型"/]
-      <input type="hidden" name="orderBy" value="rdAchievement.code"/>
+      [@b.textfields names="awardYear;获奖年度"/]
+      [@b.select name="grade.id" label="获奖级别"  items=grades  empty="..."/]
+      [@b.select name="level.id" label="获奖等级"  items=levels  empty="..."/]
+      [@b.textfields names="rdAchievement.organization;完成单位"/]
+      [@b.select name="hasExternalUser" label="校外用户" items={"1":"包含校外用户","0":"全是本校教师"}/]
+      <input type="hidden" name="orderBy" value="rdAchievement.endOn desc"/>
     [/@]
     </div>
-    <div class="search-list">[@b.div id="achievementlist" href="!search?active=1&orderBy=rdAchievement.code"/]
+    <div class="search-list">[@b.div id="achievementlist" href="!search?active=1&orderBy=rdAchievement.endOn desc"/]
   </div>
 </div>
 [@b.foot/]
