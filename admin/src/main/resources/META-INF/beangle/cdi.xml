@@ -4,6 +4,8 @@
     <module class="org.openurp.rd.web.action.admin.project.DefaultModule"/>
     <module class="org.openurp.rd.web.action.admin.code.DefaultModule"/>
     <module class="org.openurp.rd.web.action.admin.achievement.DefaultModule"/>
+    <module class="org.openurp.rd.web.action.admin.team.DefaultModule"/>
+    <module class="org.openurp.rd.web.action.admin.textbook.DefaultModule"/>
     <module class="org.openurp.starter.edu.action.ProjectModule" />
   </container>
 </cdi>

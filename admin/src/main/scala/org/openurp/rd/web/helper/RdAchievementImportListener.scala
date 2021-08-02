@@ -28,6 +28,9 @@ import org.openurp.rd.achievement.model.{RdAchievement, RdAchievementMember}
 import java.time.Instant
 
 class RdAchievementImportListener(entityDao: EntityDao) extends ImportListener {
+
+  private val teacherUserFetcher = new TeacherUserFetcher(entityDao)
+
   override def onStart(tr: ImportResult): Unit = {}
 
   override def onFinish(tr: ImportResult): Unit = {}
@@ -41,32 +44,6 @@ class RdAchievementImportListener(entityDao: EntityDao) extends ImportListener {
     }
   }
 
-  private def getTeacherUserByName(name: Any): (Option[User], String) = {
-    val query = OqlBuilder.from(classOf[User], "u")
-    query.where("u.code=:code", name)
-    val rs = entityDao.search(query)
-    if (rs.size == 1) {
-      (rs.headOption, null)
-    } else {
-      val query = OqlBuilder.from(classOf[User], "u")
-      query.where("u.name=:name", name)
-      query.where("u.category.name not like '%学生%'")
-      val rs = entityDao.search(query)
-      if (rs.size == 1) {
-        (rs.headOption, null)
-      } else if (rs.isEmpty) {
-        (None, name.toString)
-      } else {
-        val users = rs.map(x => x.code).mkString(",")
-        (None, s"$name($users)")
-      }
-    }
-  }
-
-  private def processNames(str: Any): Array[String] = {
-    val names = Strings.replace(str.toString, "，", ",")
-    Strings.split(Strings.replace(names, "、", ","))
-  }
 
   override def onItemFinish(tr: ImportResult): Unit = {
     val achievement = transfer.current.asInstanceOf[RdAchievement]
@@ -75,8 +52,8 @@ class RdAchievementImportListener(entityDao: EntityDao) extends ImportListener {
     transfer.curData.get("memberNames") foreach { memberNames =>
       if (null != memberNames) {
         var idx = 1
-        processNames(memberNames).foreach { name =>
-          val rs = getTeacherUserByName(name)
+        teacherUserFetcher.processNames(memberNames).foreach { name =>
+          val rs = teacherUserFetcher.getUserByName(name)
           val member = achievement.getMember(idx) match {
             case Some(m) => m
             case None =>

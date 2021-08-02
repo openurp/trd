@@ -1,0 +1,22 @@
+[#ftl]
+[@b.head/]
+[@b.toolbar title="编辑教材编辑信息"]bar.addBack();[/@]
+[@b.tabs]
+  [@b.form action=b.rest.save(textbookEditor) theme="list"]
+    [@b.number name="textbookEditor.idx" label="次序" value=textbookEditor.idx! required="true" maxlength="2"/]
+    [@b.radios name="textbookEditor.chief" label="主编/参编" items={"1":"主编","0":"参编"} value=textbookEditor.chief required="true"/]
+    [@b.textfield name="textbookEditor.name" label="姓名" value=textbookEditor.name! required="false" maxlength="100"/]
+    [@b.select name="textbookEditor.user.id" label="校内账户"  required="false"
+                 style="width:300px;" href=urp.api+"/base/users.json?q={term}&isTeacher=true" option="id,code+' '+data.name+' '+data.department.name"]
+      [#if textbookEditor.user??]
+      <option value="${textbookEditor.user.id!}" selected="true">${textbookEditor.user.description}</option>
+      [/#if]
+    [/@]
+    [@b.formfoot]
+      <input type="hidden" name="textbookEditor.achievement.id" value="${Parameters['textbookEditor.achievement.id']}"/>
+      [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]
+    [/@]
+  [/@]
+[/@]
+[#list 1..10 as i]<br>[/#list]
+[@b.foot/]

@@ -6,7 +6,7 @@
     bar.addItem("${b.text("action.modify")}",action.edit());
     bar.addItem("${b.text("action.delete")}",action.remove("确认删除?"));
     bar.addItem("导入",action.method('importForm'));
-    bar.addItem("${b.text("action.export")}",action.exportData("code:编号,name:项目名称,leaderNames:负责人,department.name:建设院系,level.name:项目级别,category.name:项目类别,beginOn:立项年月,endOn:最晚结项年月,finishedOn:实际结项年月,memberNames:参与人,status.name:状态,funds:资金,remark:备注",null,'fileName=课程项目信息'));
+    bar.addItem("${b.text("action.export")}",action.exportData("code:编号,name:项目名称,leaderNames:负责人,department.name:建设院系,level.name:项目级别,category.name:项目类别,beginOn:立项年月,endOn:应结项年月,finishedOn:实际结项年月,memberNames:参与人,status.name:状态,funds:资金,remark:备注",null,'fileName=课程项目信息'));
   [/@]
   [@b.row]
     [@b.boxcol /]

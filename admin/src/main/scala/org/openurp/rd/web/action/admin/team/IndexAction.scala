@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.rd.web.action.admin.project
+package org.openurp.rd.web.action.admin.team
 
 import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
@@ -30,66 +30,49 @@ import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.model.{Department, User}
 import org.openurp.code.service.impl.CodeServiceImpl
 import org.openurp.rd.code.model.RdLevel
-import org.openurp.rd.project.model._
-import org.openurp.rd.web.helper.RdProjectImportListener
+import org.openurp.rd.team.model.{TeachingTeam, TeachingTeamMember}
+import org.openurp.rd.web.helper.TeachingTeamImportListener
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.time.{Instant, YearMonth}
 
-abstract class AbstractProjectAction extends RestfulAction[RdProject] {
+class IndexAction extends RestfulAction[TeachingTeam] {
   var codeService: CodeServiceImpl = _
-  var forCourse: Boolean = _
-
-  var projectName: String = _
 
   override def indexSetting(): Unit = {
     put("departments", entityDao.getAll(classOf[Department]))
     put("levels", entityDao.getAll(classOf[RdLevel]))
-    put("statuses", entityDao.getAll(classOf[RdProjectStatus]))
-    val query = OqlBuilder.from(classOf[RdProjectCategory], "c")
-    query.where("c.forCourse=:forCourse", forCourse)
-    put("categories", entityDao.search(query))
-
     super.indexSetting()
   }
 
-  override protected def getQueryBuilder: OqlBuilder[RdProject] = {
+  override protected def getQueryBuilder: OqlBuilder[TeachingTeam] = {
     val query = super.getQueryBuilder
-    query.where("rdProject.forCourse=:forCourse", forCourse)
-    getInt("beginYear") foreach { beginYear =>
-      query.where("year(rdProject.beginOn)=:year", beginYear)
-    }
     get("leaderName") foreach { leaderName =>
       if (Strings.isNotBlank(leaderName)) {
-        query.where("exists(from rdProject.leaders as l where l.name like :leaderName)", "%" + leaderName + "%")
+        query.where("exists(from teachingTeam.leaders as l where l.name like :leaderName)", "%" + leaderName + "%")
       }
     }
     get("memberName") foreach { memberName =>
       if (Strings.isNotBlank(memberName)) {
-        query.where("exists(from rdProject.members as m where m.name like :memberName)", "%" + memberName + "%")
+        query.where("exists(from teachingTeam.members as m where m.user.name like :memberName)", "%" + memberName + "%")
       }
     }
-    getBoolean("hasExternalUser") foreach { hasExternalUser =>
-      query.where((if (hasExternalUser) "" else " not ") + "exists(from rdProject.members as m where m.user is null)")
+    getInt("beginYear") foreach { beginYear =>
+      query.where("year(teachingTeam.beginOn)=:year", beginYear)
     }
     query
   }
 
-  override def editSetting(entity: RdProject): Unit = {
+  override def editSetting(entity: TeachingTeam): Unit = {
     put("departments", entityDao.getAll(classOf[Department]))
     put("levels", entityDao.getAll(classOf[RdLevel]))
-    put("statuses", entityDao.getAll(classOf[RdProjectStatus]))
-    val query = OqlBuilder.from(classOf[RdProjectCategory], "c")
-    query.where("c.forCourse=:forCourse", forCourse)
-    put("categories", entityDao.search(query))
     put("urp", Ems)
     val members = entity.members map (_.user)
     put("members", members)
     super.editSetting(entity)
   }
 
-  override protected def saveAndRedirect(entity: RdProject): View = {
-    entity.forCourse = forCourse
+  override protected def saveAndRedirect(entity: TeachingTeam): View = {
     entity.leaders.clear()
     val leaderIds = longIds("leader").toSet
     entity.leaders ++= entityDao.find(classOf[User], leaderIds)
@@ -99,11 +82,10 @@ abstract class AbstractProjectAction extends RestfulAction[RdProject] {
     var idx = 1
     memberIds foreach { mId =>
       if (!leaderIds.contains(mId)) {
-        val member = new RdProjectMember()
+        val member = new TeachingTeamMember()
         member.idx = idx
-        member.user = Some(entityDao.get(classOf[User], mId))
-        member.name = member.user.get.name
-        member.project = entity
+        member.user = entityDao.get(classOf[User], mId)
+        member.team = entity
         entity.members += member
         idx += 1
       }
@@ -115,44 +97,32 @@ abstract class AbstractProjectAction extends RestfulAction[RdProject] {
   protected override def configImport(setting: ImportSetting): Unit = {
     val fl = new ForeignerListener(entityDao)
     fl.addForeigerKey("name")
-    setting.listeners = List(fl, new RdProjectImportListener(entityDao, true))
+    setting.listeners = List(fl, new TeachingTeamImportListener(entityDao))
   }
 
   @response
   def downloadTemplate(): Any = {
-    val statuses = entityDao.search(OqlBuilder.from(classOf[RdProjectStatus], "p").orderBy("p.name")).map(_.name)
     val levels = entityDao.search(OqlBuilder.from(classOf[RdLevel], "bc").orderBy("bc.name")).map(_.name)
     val departs = entityDao.search(OqlBuilder.from(classOf[Department], "bt").orderBy("bt.name")).map(_.name)
-    val categories = entityDao.search(OqlBuilder.from(classOf[RdProjectCategory], "bc").orderBy("bc.name")).map(_.name)
 
     val schema = new ExcelSchema()
     val sheet = schema.createScheet("数据模板")
-    sheet.title(s"${projectName}项目信息模板")
+    sheet.title(s"教学团队信息模板")
     sheet.remark("特别说明：\n1、不可改变本表格的行列结构以及批注，否则将会导入失败！\n2、必须按照规格说明的格式填写。\n3、可以多次导入，重复的信息会被新数据更新覆盖。\n4、保存的excel文件名称可以自定。")
-    sheet.add("项目编号", "rdProject.code").length(15).required().remark("≤10位")
-    sheet.add("项目名称", "rdProject.name").length(150).required()
-    sheet.add("负责人姓名(或工号)", "leaderName").length(30).required()
-    sheet.add("建设院系", "rdProject.department.name").ref(departs).required()
-    sheet.add("项目级别", "rdProject.level.name").ref(levels).required()
-    sheet.add("项目类别", "rdProject.category.name").ref(categories).required()
-    sheet.add("资金", "rdProject.funds").required().decimal()
-
-    sheet.add("立项年月", "rdProject.beginOn").required().date("YYYY-MM").asType(classOf[YearMonth])
-    sheet.add("应结项年月", "rdProject.endOn").required().date("YYYY-MM").asType(classOf[YearMonth])
-    sheet.add("实际结项年月", "rdProject.finishedOn").date("YYYY-MM").asType(classOf[YearMonth])
-
-    sheet.add("项目状态", "rdProject.status.name").ref(statuses).required()
-
-    sheet.add("参与人姓名(或工号)列表（按次序）", "memberNames")
-    sheet.add("备注", "rdProject.remark")
-
+    sheet.add("团队编号", "teachingTeam.code").length(15).required().remark("≤10位")
+    sheet.add("项团队目名称", "teachingTeam.name").length(150).required()
+    sheet.add("带头人姓名(或工号)", "leaderName").length(30).required()
+    sheet.add("所在院系", "teachingTeam.department.name").ref(departs).required()
+    sheet.add("团队级别", "teachingTeam.level.name").ref(levels).required()
+    sheet.add("成员姓名(或工号)列表（按次序）", "memberNames")
+    sheet.add("获奖信息", "teachingTeam.awardTitle").length(50)
+    sheet.add("立项年月","teachingTeam.beginOn").date("YYYY-MM").asType(classOf[YearMonth])
+    sheet.add("备注", "teachingTeam.remark")
     val code = schema.createScheet("数据字典")
-    code.add("项目类别").data(categories)
-    code.add("项目级别").data(levels)
-    code.add("建设院系").data(departs)
-    code.add("项目状态").data(statuses)
+    code.add("团队级别").data(levels)
+    code.add("所在院系").data(departs)
     val os = new ByteArrayOutputStream()
     schema.generate(os)
-    Stream(new ByteArrayInputStream(os.toByteArray), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", s"${projectName}项目模板.xlsx")
+    Stream(new ByteArrayInputStream(os.toByteArray), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "教学团队信息模板.xlsx")
   }
 }

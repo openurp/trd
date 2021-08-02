@@ -33,7 +33,7 @@
   <tr>
     <td class="title" width="20%">立项年月:</td>
     <td class="content">${rdProject.beginOn}</td>
-    <td class="title" width="20%">最晚结项年月:</td>
+    <td class="title" width="20%">应结项年月:</td>
     <td class="content">${rdProject.endOn}</td>
   </tr>
    <tr>

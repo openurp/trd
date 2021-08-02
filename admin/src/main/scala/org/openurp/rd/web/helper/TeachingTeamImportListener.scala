@@ -20,14 +20,14 @@ package org.openurp.rd.web.helper
 
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.Strings
-import org.beangle.data.dao.{EntityDao, OqlBuilder}
+import org.beangle.data.dao.EntityDao
 import org.beangle.data.transfer.importer.{ImportListener, ImportResult}
 import org.openurp.base.model.User
-import org.openurp.rd.project.model.{RdProject, RdProjectMember}
+import org.openurp.rd.team.model.{TeachingTeam, TeachingTeamMember}
 
 import java.time.Instant
 
-class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends ImportListener {
+class TeachingTeamImportListener(entityDao: EntityDao) extends ImportListener {
 
   private val teacherUserFetcher = new TeacherUserFetcher(entityDao)
 
@@ -36,8 +36,8 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
   override def onFinish(tr: ImportResult): Unit = {}
 
   override def onItemStart(tr: ImportResult): Unit = {
-    transfer.curData.get("rdProject.code") foreach { code =>
-      val cs = entityDao.findBy(classOf[RdProject], "code", List(code))
+    transfer.curData.get("teachingTeam.code") foreach { code =>
+      val cs = entityDao.findBy(classOf[TeachingTeam], "code", List(code))
       if (cs.nonEmpty) {
         transfer.current = cs.head
       }
@@ -46,10 +46,10 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
 
 
   override def onItemFinish(tr: ImportResult): Unit = {
-    val project = transfer.current.asInstanceOf[RdProject]
-    project.forCourse = forCourse
+    val team = transfer.current.asInstanceOf[TeachingTeam]
 
-    project.updatedAt = Instant.now
+    val errors = tr.errors
+    team.updatedAt = Instant.now
     val leaders = Collections.newBuffer[User]
     var leaderNames: Set[String] = null
     transfer.curData.get("leaderName") foreach { leaderName =>
@@ -59,34 +59,32 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
         if (Strings.isEmpty(rs._2)) {
           leaders += rs._1.get
         } else {
-          tr.addFailure("找不到唯一的负责人", rs._2)
+          tr.addFailure("找不到唯一的带头人", rs._2)
         }
       }
     }
 
-    if (leaders.nonEmpty && project.department != null && project.level != null && project.category != null && project.status != null) {
-      project.leaders.clear()
-      project.leaders ++= leaders
+    if (leaders.nonEmpty && team.department != null && team.level != null) {
+      team.leaders.clear()
+      team.leaders ++= leaders
       transfer.curData.get("memberNames") foreach { memberNames =>
         if (null != memberNames) {
           var idx = 1
           teacherUserFetcher.processNames(memberNames).foreach { name =>
             if (!leaderNames.contains(name)) {
               val rs = teacherUserFetcher.getUserByName(name)
-              val member = project.getMember(idx) match {
+              val member = team.getMember(idx) match {
                 case Some(m) => m
                 case None =>
-                  val m = new RdProjectMember()
+                  val m = new TeachingTeamMember()
                   m.idx = idx
-                  m.project = project
-                  project.members += m
+                  m.team = team
+                  team.members += m
                   m
               }
               if (Strings.isEmpty(rs._2)) {
-                member.user = Some(rs._1.get)
-                member.name = rs._1.get.name
+                member.user = rs._1.get
               } else {
-                member.name = name
                 tr.addFailure("找不到唯一的参与人", rs._2)
               }
               idx += 1
@@ -94,7 +92,7 @@ class RdProjectImportListener(entityDao: EntityDao, forCourse: Boolean) extends 
           }
         }
       }
-      entityDao.saveOrUpdate(project)
+      if (tr.errors == errors) entityDao.saveOrUpdate(team)
     }
   }
 }
