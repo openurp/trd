@@ -13,8 +13,8 @@
   <name>OpenURP R&amp;D Web Parent</name>
 
   <properties>
-    <openurp.starter.version>0.0.7</openurp.starter.version>
-    <openurp.api.version>0.23.1-SNAPSHOT</openurp.api.version>
+    <openurp.starter.version>0.0.8</openurp.starter.version>
+    <openurp.api.version>0.23.1</openurp.api.version>
   </properties>
 
   <modules>

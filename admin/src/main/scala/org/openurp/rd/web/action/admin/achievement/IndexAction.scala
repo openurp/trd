@@ -46,7 +46,7 @@ class IndexAction extends RestfulAction[RdAchievement] {
   override protected def editSetting(entity: RdAchievement): Unit = {
     put("achievementTypes", entityDao.getAll(classOf[RdAchievementType]))
     if (!entity.persisted) {
-      entity.organization = entityDao.findBy(classOf[User], "code", List(Securities.user)).head.school.name
+      entity.orgName = entityDao.findBy(classOf[User], "code", List(Securities.user)).head.school.name
     }
     super.editSetting(entity)
   }
@@ -104,7 +104,7 @@ class IndexAction extends RestfulAction[RdAchievement] {
     sheet.add("成果名称", "rdAchievement.name").length(150).required()
     sheet.add("完成人姓名(或工号)", "memberNames").length(100).required()
     sheet.add("成果类型", "rdAchievement.achievementType.name").ref(achievementTypes).required()
-    sheet.add("完成单位", "rdAchievement.organization").length(300).required()
+    sheet.add("完成单位", "rdAchievement.orgName").length(300).required()
     sheet.add("科类代码", "rdProject.categoryCode").length(4)
 
     val code = schema.createScheet("数据字典")

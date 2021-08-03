@@ -10,7 +10,7 @@
       [@b.textfields names="awardYear;获奖年度"/]
       [@b.select name="grade.id" label="获奖级别"  items=grades  empty="..."/]
       [@b.select name="level.id" label="获奖等级"  items=levels  empty="..."/]
-      [@b.textfields names="rdAchievement.organization;完成单位"/]
+      [@b.textfields names="rdAchievement.orgName;完成单位"/]
       [@b.select name="hasExternalUser" label="校外用户" items={"1":"包含校外用户","0":"全是本校教师"}/]
       <input type="hidden" name="orderBy" value="rdAchievement.endOn desc"/>
     [/@]

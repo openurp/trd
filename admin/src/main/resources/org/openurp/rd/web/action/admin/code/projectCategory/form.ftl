@@ -3,7 +3,7 @@
 [@b.toolbar title="修改项目类别"]bar.addBack();[/@]
 [@b.tabs]
   [@b.form action=b.rest.save(rdProjectCategory) theme="list"]
-    [@b.textfield name="rdProjectCategory.code" label="代码" value="${rdProjectCategory.name!}" required="true" maxlength="20"/]
+    [@b.textfield name="rdProjectCategory.code" label="代码" value=rdProjectCategory.code! required="true" maxlength="20"/]
     [@b.textfield name="rdProjectCategory.name" label="名称" value="${rdProjectCategory.name!}" required="true" maxlength="20"/]
     [@b.textfield name="rdProjectCategory.enName" label="英文名称" value="${rdProjectCategory.enName!}" maxlength="100"/]
     [@b.radios name="rdProjectCategory.forCourse" label="使用范围" items={"1":"课程项目","0":"教改项目"} value=rdProjectCategory.forCourse/]

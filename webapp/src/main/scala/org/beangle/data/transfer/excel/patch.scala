@@ -136,9 +136,17 @@ final class CellOps(private val cell: Cell) extends AnyVal {
       case DataType.DateTime => LocalDateTime.parse(Dates.normalize(str))
       case DataType.Boolean => String2BooleanConverter(str)
       case DataType.Time => LocalTime.parse(str)
-      case DataType.YearMonth => YearMonth.parse(if (str.contains("-")) str else str.substring(0, 4) + "-" + str.substring(4))
+      case DataType.YearMonth => YearMonth.parse(nomalizeYearMonth(str))
       case DataType.MonthDay => MonthDay.parse(if (str.startsWith("--")) "--" + str else str)
       case _ => throw new RuntimeException("convert string to " + dataType + " is not supported")
+    }
+  }
+
+  private def nomalizeYearMonth(str:String):String={
+    if(str.contains("-")){
+      str.substring(0, 4) + "-" + Strings.leftPad(str.substring(5),2,'0')
+    }else{
+      str.substring(0, 4) + "-" + Strings.leftPad(str.substring(4),2,'0')
     }
   }
 

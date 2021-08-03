@@ -15,7 +15,7 @@
     <td class="title" width="20%">成果类型:</td>
     <td class="content">${achievement.achievementType.name}</td>
     <td class="title" width="20%">完成单位:</td>
-    <td class="content">${achievement.organization}</td>
+    <td class="content">${achievement.orgName}</td>
   </tr>
   <tr>
     <td class="title" width="20%">完成人:</td>
