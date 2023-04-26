@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <cdi>
-  <container name="web">
-    <module class="org.openurp.rd.web.action.admin.project.DefaultModule"/>
-    <module class="org.openurp.rd.web.action.admin.code.DefaultModule"/>
-    <module class="org.openurp.rd.web.action.admin.achievement.DefaultModule"/>
-    <module class="org.openurp.rd.web.action.admin.team.DefaultModule"/>
-    <module class="org.openurp.rd.web.action.admin.textbook.DefaultModule"/>
-    <module class="org.openurp.starter.edu.action.ProjectModule" />
+  <container>
+    <module class="org.openurp.trd.web.action.admin.project.DefaultModule"/>
+    <module class="org.openurp.trd.web.action.admin.code.DefaultModule"/>
+    <module class="org.openurp.trd.web.action.admin.achievement.DefaultModule"/>
+    <module class="org.openurp.trd.web.action.admin.team.DefaultModule"/>
+    <module class="org.openurp.trd.web.action.admin.textbook.DefaultModule"/>
+    <module class="org.openurp.starter.web.ProjectModule"/>
   </container>
 </cdi>
