@@ -4,12 +4,12 @@
 <div class="search-container">
     <div class="search-panel">
     [@b.form name="textbookSearchForm" action="!search" target="achievementlist" title="ui.searchForm" theme="search"]
-      [@b.textfields names="textbookAchievement.textbook.isbn;ISBN"/]
-      [@b.textfields names="textbookAchievement.textbook.name;名称,textbookAchievement.textbook.press.name;出版社,textbookAchievement.textbook.category.name;分类,textbookAchievement.textbook.series;丛书"/]
-      <input type="hidden" name="orderBy" value="textbookAchievement.textbook.name"/>
+      [@b.textfields names="textbookAchievement.isbn;ISBN"/]
+      [@b.textfields names="textbookAchievement.name;名称,textbookAchievement.press.name;出版社"/]
+      <input type="hidden" name="orderBy" value="textbookAchievement.name"/>
     [/@]
     </div>
-    <div class="search-list">[@b.div id="achievementlist" href="!search?orderBy=textbookAchievement.textbook.name asc"/]
+    <div class="search-list">[@b.div id="achievementlist" href="!search?orderBy=textbookAchievement.name asc"/]
     </td>
   </tr>
 </table>

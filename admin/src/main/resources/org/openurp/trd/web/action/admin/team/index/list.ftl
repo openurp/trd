@@ -14,7 +14,7 @@
     [@b.col width="20%" property="name" title="名称"][@b.a href="!info?id=${teachingTeam.id}"]${teachingTeam.name}[/@][/@]
     [@b.col width="8%" property="leaderNames" title="带头人"/]
     [@b.col width="10%" property="department.name" title="所在院系"/]
-    [@b.col width="22%" property="memberNames" title="团队成员"/]
+    [@b.col property="memberNames" title="团队成员"/]
     [@b.col width="8%" property="level.name" title="级别"/]
     [@b.col width="12%" property="awardTitle" title="获奖名称"]
       <span style="font-size:0.8em">${teachingTeam.awardTitle!}</span>

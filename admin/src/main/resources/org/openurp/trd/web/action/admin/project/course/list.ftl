@@ -11,7 +11,7 @@
   [@b.row]
     [@b.boxcol /]
     [@b.col width="9%" property="code" title="编号"/]
-    [@b.col width="23%" property="name" title="名称"][@b.a href="!info?id=${rdProject.id}"]${rdProject.name}[/@][/@]
+    [@b.col property="name" title="名称"][@b.a href="!info?id=${rdProject.id}"]${rdProject.name}[/@][/@]
     [@b.col width="8%" property="leaderNames" title="负责人"/]
     [@b.col width="10%" property="department.name" title="建设院系"/]
     [@b.col width="8%" property="level.name" title="级别"/]
