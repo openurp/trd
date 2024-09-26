@@ -1,5 +1,5 @@
-import org.openurp.parent.Settings._
-import org.openurp.parent.Dependencies._
+import org.openurp.parent.Dependencies.*
+import org.openurp.parent.Settings.*
 
 ThisBuild / organization := "org.openurp.std.info"
 ThisBuild / version := "0.0.3-SNAPSHOT"
@@ -23,29 +23,17 @@ ThisBuild / developers := List(
 ThisBuild / description := "OpenURP R&amp;D Webapp"
 ThisBuild / homepage := Some(url("http://openurp.github.io/rd/index.html"))
 
-val apiVer = "0.33.2-SNAPSHOT"
-val starterVer = "0.3.3"
-val baseVer = "0.4.2"
+val apiVer = "0.41.7"
+val starterVer = "0.3.41"
+val baseVer = "0.4.39"
 val openurp_trd_api = "org.openurp.trd" % "openurp-trd-api" % apiVer
 val openurp_stater_web = "org.openurp.starter" % "openurp-starter-web" % starterVer
+
 lazy val root = (project in file("."))
-  .settings()
-  .aggregate(admin, webapp)
-
-lazy val admin = (project in file("admin"))
-  .settings(
-    name := "openurp-trd-admin",
-    common,
-    libraryDependencies ++= Seq(beangle_commons_core, beangle_data_orm, beangle_webmvc_core, beangle_webmvc_support),
-    libraryDependencies ++= Seq(openurp_trd_api, beangle_serializer_text),
-    libraryDependencies ++= Seq(openurp_stater_web)
-  )
-
-lazy val webapp = (project in file("webapp"))
   .enablePlugins(WarPlugin, TomcatPlugin)
   .settings(
     name := "openurp-trd-webapp",
-    common
-  ).dependsOn(admin)
-
-publish / skip := true
+    common,
+    libraryDependencies ++= Seq(openurp_trd_api),
+    libraryDependencies ++= Seq(openurp_stater_web)
+  )
