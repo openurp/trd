@@ -17,7 +17,7 @@
 
 package org.openurp.trd.web.action.admin.textbook
 
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.action.RestfulAction
 import org.openurp.code.sin.model.Press
 import org.openurp.trd.achievement.model.TextbookAchievement

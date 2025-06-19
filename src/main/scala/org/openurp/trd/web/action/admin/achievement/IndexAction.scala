@@ -25,8 +25,8 @@ import org.beangle.doc.excel.schema.ExcelSchema
 import org.beangle.doc.transfer.importer.ImportSetting
 import org.beangle.doc.transfer.importer.listener.ForeignerListener
 import org.beangle.security.Securities
-import org.beangle.web.action.annotation.response
-import org.beangle.web.action.view.Stream
+import org.beangle.webmvc.annotation.response
+import org.beangle.webmvc.view.Stream
 import org.beangle.webmvc.support.action.{ExportSupport, ImportSupport, RestfulAction}
 import org.openurp.base.model.User
 import org.openurp.code.trd.model.{RdAwardGrade, RdLevel}

@@ -17,7 +17,7 @@
 
 package org.openurp.trd.web.action.admin.achievement
 
-import org.beangle.cdi.bind.BindModule
+import org.beangle.commons.cdi.BindModule
 
 class DefaultModule extends BindModule {
   override protected def binding(): Unit = {

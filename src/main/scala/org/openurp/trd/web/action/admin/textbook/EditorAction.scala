@@ -19,7 +19,7 @@ package org.openurp.trd.web.action.admin.textbook
 
 import org.beangle.commons.lang.Strings
 import org.beangle.ems.app.Ems
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.action.RestfulAction
 import org.openurp.base.model.User
 import org.openurp.trd.achievement.model.TextbookEditor

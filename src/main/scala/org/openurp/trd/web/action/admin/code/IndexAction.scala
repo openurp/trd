@@ -17,8 +17,8 @@
 
 package org.openurp.trd.web.action.admin.code
 
-import org.beangle.web.action.support.ActionSupport
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.support.ActionSupport
+import org.beangle.webmvc.view.View
 
 class IndexAction extends ActionSupport {
 
