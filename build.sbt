@@ -1,13 +1,13 @@
 import org.openurp.parent.Dependencies.*
 import org.openurp.parent.Settings.*
 
-ThisBuild / organization := "org.openurp.std.info"
+ThisBuild / organization := "org.openurp.trd"
 ThisBuild / version := "0.0.4-SNAPSHOT"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
-    url("https://github.com/openurp/rd"),
-    "scm:git@github.com:openurp/rd.git"
+    url("https://github.com/openurp/trd"),
+    "scm:git@github.com:openurp/trd.git"
   )
 )
 
@@ -21,7 +21,7 @@ ThisBuild / developers := List(
 )
 
 ThisBuild / description := "OpenURP R&amp;D Webapp"
-ThisBuild / homepage := Some(url("http://openurp.github.io/rd/index.html"))
+ThisBuild / homepage := Some(url("http://openurp.github.io/trd/index.html"))
 
 val apiVer = "0.44.0"
 val starterVer = "0.3.58"
