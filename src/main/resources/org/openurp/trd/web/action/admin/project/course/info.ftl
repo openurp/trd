@@ -32,13 +32,13 @@
   </tr>
   <tr>
     <td class="title" width="20%">立项年月:</td>
-    <td class="content">${rdProject.beginOn}</td>
+    <td class="content">${rdProject.beginIn}</td>
     <td class="title" width="20%">应结项年月:</td>
-    <td class="content">${rdProject.endOn}</td>
+    <td class="content">${rdProject.endIn}</td>
   </tr>
    <tr>
     <td class="title" width="20%">实际结项年月:</td>
-    <td class="content">${(rdProject.finishedOn)!}</td>
+    <td class="content">${(rdProject.finishedIn)!}</td>
     <td class="title" width="20%">资金:</td>
     <td class="content">${rdProject.funds/10000.0}万</td>
   </tr>

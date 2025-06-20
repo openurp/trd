@@ -12,10 +12,10 @@
       [@b.select name="level.id" label="获奖等级"  items=levels  empty="..."/]
       [@b.textfields names="rdAchievement.orgName;完成单位"/]
       [@b.select name="hasExternalUser" label="校外用户" items={"1":"包含校外用户","0":"全是本校教师"}/]
-      <input type="hidden" name="orderBy" value="rdAchievement.endOn desc"/>
+      <input type="hidden" name="orderBy" value="rdAchievement.endIn desc"/>
     [/@]
     </div>
-    <div class="search-list">[@b.div id="achievementlist" href="!search?active=1&orderBy=rdAchievement.endOn desc"/]
+    <div class="search-list">[@b.div id="achievementlist" href="!search?active=1&orderBy=rdAchievement.endIn desc"/]
   </div>
 </div>
 [@b.foot/]

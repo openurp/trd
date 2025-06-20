@@ -22,7 +22,7 @@
         [/#list]
     [/@]
     [@b.textfield name="teachingTeam.awardTitle" label="获奖名称" value=teachingTeam.awardTitle! required="true" maxlength="100" /]
-    [@b.date label="立项年月"  name="teachingTeam.beginOn" required="true"   value=teachingTeam.beginOn! format="yyyy-MM" style="width:100px"/]
+    [@b.date label="立项年月"  name="teachingTeam.beginIn" required="true" value=teachingTeam.beginIn! format="yyyy-MM" style="width:100px"/]
     [@b.textarea name="teachingTeam.remark" label="备注" value="${teachingTeam.remark!}"  maxlength="100" cols="30"/]
     [@b.formfoot]
       [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]

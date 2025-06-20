@@ -19,7 +19,7 @@
     [@b.col width="12%" property="awardTitle" title="获奖名称"]
       <span style="font-size:0.8em">${teachingTeam.awardTitle!}</span>
     [/@]
-    [@b.col width="8%" property="beginOn" title="立项年月"/]
+    [@b.col width="8%" property="beginIn" title="立项年月"/]
   [/@]
   [/@]
 [@b.foot/]

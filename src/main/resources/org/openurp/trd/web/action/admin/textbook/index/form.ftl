@@ -12,7 +12,7 @@
     [@b.textfield name="textbookAchievement.name" label="教材名称" value=textbookAchievement.name! required="true" maxlength="200"/]
     [@b.select name="textbookAchievement.press.id" id="textbook_press_id" label="出版社" value=(textbookAchievement.press.id)!
                style="width:200px;" items=presses?sort_by('name') empty="..." required="true"/]
-    [@b.datepicker name="textbookAchievement.publishedOn" label="出版年月" value=(textbook.publishedOn)!  required="true"/]
+    [@b.date name="textbookAchievement.publishedIn" label="出版年月" value=(textbook.publishedIn)!  required="true"/]
     [@b.formfoot]
       [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]
     [/@]

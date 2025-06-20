@@ -30,7 +30,7 @@
     [@b.col width="16%" title="获奖"]
       [#list textbookAchievement.awards as a]${a.name}[#if a_has_next],[/#if][/#list]
     [/@]
-    [@b.col width="8%" property="publishedOn" title="出版年月"]${(textbookAchievement.publishedOn?string('yyyy-MM'))!}[/@]
+    [@b.col width="8%" property="publishedIn" title="出版年月"]${(textbookAchievement.publishedIn?string('yyyy-MM'))!}[/@]
   [/@]
  [/@]
  [@b.form name="awardImportForm" action="award!importForm" target="_blank" /]

@@ -32,7 +32,7 @@
   </tr>
   <tr>
     <td class="title" width="20%">立项年月:</td>
-    <td class="content">${teachingTeam.beginOn}</td>
+    <td class="content">${teachingTeam.beginIn}</td>
     <td class="title" width="20%">备注:</td>
     <td class="content">${teachingTeam.remark!}</td>
   </tr>

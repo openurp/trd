@@ -14,7 +14,7 @@
   [@b.row]
       [@b.boxcol /]
       [@b.col width="6%" property="code" title="编号"]${rdAchievement.code}[/@]
-      [@b.col width="6%" property="endOn" title="完成年度"]${rdAchievement.endOn?string("yyyy")}[/@]
+      [@b.col width="6%" property="endIn" title="完成年度"]${rdAchievement.endIn?string("yyyy")}[/@]
       [@b.col property="name" title="名称"][@b.a href="!info?id=${rdAchievement.id}"]${rdAchievement.name}[/@][/@]
       [@b.col width="10%" property="achievementType.name" title="成果类型"/]
       [@b.col width="25%" property="memberNames" title="完成人"]

@@ -16,7 +16,7 @@
     [@b.col width="10%" property="department.name" title="建设院系"/]
     [@b.col width="8%" property="level.name" title="级别"/]
     [@b.col width="16%" property="category.name" title="类别"/]
-    [@b.col width="8%" property="beginOn" title="立项年月"/]
+    [@b.col width="8%" property="beginIn" title="立项年月"/]
     [@b.col width="8%" property="status.name" title="状态"/]
   [/@]
   [/@]
